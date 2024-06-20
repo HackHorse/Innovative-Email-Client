@@ -1,0 +1,44 @@
+<!-- public/data.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Data</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-4">Email Data</h1>
+    <ul id="emailList" class="divide-y divide-gray-200">
+      <!-- Emails will be dynamically added here -->
+    </ul>
+  </div>
+  <script>
+    async function fetchEmails() {
+      try {
+        const response = await fetch('/api/emails');
+        if (!response.ok) throw new Error('Failed to fetch emails');
+        const emails = await response.json();
+        const emailList = document.getElementById('emailList');
+        emailList.innerHTML = '';
+        emails.forEach(email => {
+          const li = document.createElement('li');
+          li.className = 'py-4';
+          li.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div class="text-lg font-medium">${email.subject}</div>
+              <div class="text-gray-500">${email.sender}</div>
+            </div>
+          `;
+          emailList.appendChild(li);
+        });
+      } catch (error) {
+        console.error('Error fetching emails:', error);
+      }
+    }
+    fetchEmails();
+    setInterval(fetchEmails, 5000); // Refresh every 5 seconds
+  </script>
+</body>
+</html>
