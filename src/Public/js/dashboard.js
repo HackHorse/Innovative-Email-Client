@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const userAccessToken = localStorage.getItem('userAccessToken');
   const userEmail = localStorage.getItem('userEmail');
-  let lastFetchedIndex = 0; // Initialize last fetched index
 
   if (userEmail) {
     document.getElementById('user-email-value').textContent = userEmail;
@@ -11,13 +10,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (userAccessToken) {
     try {
-      // Fetch emails initially on page load
+      // Fetch and display emails initially on page load
       await fetchAndDisplayEmails(userAccessToken);
 
-      // Add event listener for Sync button
+      // Poll for new emails every few seconds
+      setInterval(async () => {
+        await fetchAndDisplayEmails(userAccessToken);
+      }, 30000); // Polling interval: 30 seconds
+
+      // Add event listener for Sync button (optional)
       document.getElementById('sync-btn').addEventListener('click', async () => {
         try {
-          const syncResponse = await axios.post('/api/emails/sync', { skip: lastFetchedIndex, top: 10 }, {
+          const syncResponse = await axios.post('/api/emails/sync', null, {
             headers: {
               'Authorization': `Bearer ${userAccessToken}`
             }
@@ -26,7 +30,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (syncResponse.status === 200) {
             console.log('Sync successful');
             await fetchAndDisplayEmails(userAccessToken); // Fetch and display updated emails after sync
-            lastFetchedIndex += 10; // Update last fetched index
           } else {
             console.error('Sync failed:', syncResponse.statusText);
           }

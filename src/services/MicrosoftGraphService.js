@@ -19,7 +19,7 @@ class MicrosoftGraphService {
         throw new Error('Access token not provided or expired');
       }
   
-      const url = `https://graph.microsoft.com/v1.0/me/messages?$skip=${skip}&$top=${top}`;
+      const url = `https://graph.microsoft.com/v1.0/me/messages?$skip=${skip}&$top=${top}&$orderby=receivedDateTime desc`;
       const options = {
         method: 'GET',
         url: url,

@@ -1,10 +1,11 @@
 require("dotenv").config();
 const EmailService = require("../services/EmailService");
 const MicrosoftGraphService = require("../services/MicrosoftGraphService");
+const elasticsearch = require("../utils/elasticsearch");
 const ElasticsearchService = require("../services/ElasticsearchService");
 
 class EmailSyncService {
-  static async syncUserEmails(user, skip = 0, top = 10) {
+  static async syncUserEmails(user) {
     try {
       const msGraphService = new MicrosoftGraphService(
         process.env.OUTLOOK_CLIENT_ID,
@@ -14,11 +15,27 @@ class EmailSyncService {
       // Authenticate using user's access token and refresh token
       await msGraphService.authenticate(user.accessToken, user.refreshToken);
 
-      // Fetch emails from Microsoft Graph API
-      const emails = await msGraphService.fetchEmails(skip, top);
+      // Fetch last synced email ID from Elasticsearch
+      let lastSyncedEmailId = await elasticsearch.getLastSyncedEmailId(user.id);
 
-      // Sync each email into Elasticsearch using EmailService
-      await EmailService.syncEmails(user, emails);
+      // If no lastSyncedEmailId exists, start from the beginning
+      if (!lastSyncedEmailId) {
+        lastSyncedEmailId = "";
+      }
+
+      // Fetch emails from Microsoft Graph API
+      const emails = await msGraphService.fetchEmails(0, 50); // Fetch 50 emails initially
+
+      // Filter out emails that have already been indexed
+      const newEmails = emails.filter(email => email.id > lastSyncedEmailId);
+
+      // Sync new emails into Elasticsearch
+      await EmailService.syncEmails(user, newEmails);
+
+      // Update last synced email ID in Elasticsearch
+      if (newEmails.length > 0) {
+        await elasticsearch.setLastSyncedEmailId(user.id, newEmails[0].id); // Update lastSyncedEmailId
+      }
 
       // Update mailbox details in Elasticsearch
       const mailboxDetails = {
@@ -27,7 +44,7 @@ class EmailSyncService {
       };
       await ElasticsearchService.indexMailboxDetails(user.id, mailboxDetails);
 
-      return emails.length;
+      return newEmails.length;
     } catch (error) {
       console.error("Error syncing emails:", error);
       throw error;

@@ -63,19 +63,44 @@ class ElasticsearchClient {
     }
   }
 
-  async deleteData(indexName, id) {
-    try {
-      const response = await this.client.delete({
-        index: indexName,
-        id,
-      });
-      console.log('Deleted data:', response);
-      return response;
-    } catch (error) {
-      console.error('Error deleting data:', error);
-      throw error;
+  // Add these methods to ElasticsearchClient class
+
+async getLastSyncedEmailId(userId) {
+  try {
+    const result = await this.client.get({
+      index: 'users', // Index where user details are stored
+      id: userId,
+    });
+
+    return result._source.lastSyncedEmailId;
+  } catch (error) {
+    if (error.statusCode === 404) {
+      console.log(`No last synced email ID found for user ${userId}`);
+      return null;
     }
+    console.error('Error getting last synced email ID:', error);
+    throw error;
   }
+}
+
+async setLastSyncedEmailId(userId, lastSyncedEmailId) {
+  try {
+    const response = await this.client.update({
+      index: 'users', // Index where user details are stored
+      id: userId,
+      body: {
+        doc: {
+          lastSyncedEmailId: lastSyncedEmailId,
+        }
+      }
+    });
+    console.log(`Updated last synced email ID for user ${userId}`);
+    return response;
+  } catch (error) {
+    console.error('Error setting last synced email ID:', error);
+    throw error;
+  }
+}
 
   async checkConnection() {
     try {
