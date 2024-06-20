@@ -13,13 +13,13 @@ class MicrosoftGraphService {
     this.refreshToken = refreshToken;
   }
 
-  async fetchEmails() {
+  async fetchEmails(skip = 0, top = 10) {
     try {
       if (!this.accessToken) {
         throw new Error('Access token not provided or expired');
       }
-
-      const url = 'https://graph.microsoft.com/v1.0/me/messages';
+  
+      const url = `https://graph.microsoft.com/v1.0/me/messages?$skip=${skip}&$top=${top}`;
       const options = {
         method: 'GET',
         url: url,
@@ -28,7 +28,7 @@ class MicrosoftGraphService {
           Accept: 'application/json',
         },
       };
-
+  
       const response = await axios(options);
       return response.data.value; // Assuming the email messages are in the `value` property
     } catch (error) {

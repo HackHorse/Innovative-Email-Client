@@ -4,7 +4,7 @@ const MicrosoftGraphService = require("../services/MicrosoftGraphService");
 const ElasticsearchService = require("../services/ElasticsearchService");
 
 class EmailSyncService {
-  static async syncUserEmails(user) {
+  static async syncUserEmails(user, skip = 0, top = 10) {
     try {
       const msGraphService = new MicrosoftGraphService(
         process.env.OUTLOOK_CLIENT_ID,
@@ -15,7 +15,7 @@ class EmailSyncService {
       await msGraphService.authenticate(user.accessToken, user.refreshToken);
 
       // Fetch emails from Microsoft Graph API
-      const emails = await msGraphService.fetchEmails();
+      const emails = await msGraphService.fetchEmails(skip, top);
 
       // Sync each email into Elasticsearch using EmailService
       await EmailService.syncEmails(user, emails);
