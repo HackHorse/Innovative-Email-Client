@@ -63,43 +63,28 @@ class ElasticsearchClient {
     }
   }
 
-  // Add these methods to ElasticsearchClient class
-
   async getLastSyncedEmailId(userId) {
-    try {
-      const result = await this.client.get({
-        index: "users", // Index where user details are stored
-        id: userId,
-      });
+    const result = await this.client.search({
+      index: `emails_${userId}`,
+      body: {
+        sort: [{ receivedDateTime: { order: "desc" } }],
+        size: 1,
+        _source: ["emailId"],
+      },
+    });
 
-      return result._source.lastSyncedEmailId;
-    } catch (error) {
-      if (error.statusCode === 404) {
-        console.log(`No last synced email ID found for user ${userId}`);
-        return null;
-      }
-      console.error("Error getting last synced email ID:", error);
-      throw error;
-    }
+    return result.hits.hits.length > 0
+      ? result.hits.hits[0]._source.emailId
+      : null;
   }
 
-  async setLastSyncedEmailId(userId, lastSyncedEmailId) {
-    try {
-      const response = await this.client.update({
-        index: "users", // Index where user details are stored
-        id: userId,
-        body: {
-          doc: {
-            lastSyncedEmailId: lastSyncedEmailId,
-          },
-        },
-      });
-      console.log(`Updated last synced email ID for user ${userId}`);
-      return response;
-    } catch (error) {
-      console.error("Error setting last synced email ID:", error);
-      throw error;
-    }
+  async setLastSyncedEmailId(userId, emailId) {
+    const indexName = `emails_${userId}_meta`;
+    await this.client.index({
+      index: indexName,
+      id: "lastSyncedEmailId",
+      body: { emailId },
+    });
   }
 
   async checkConnection() {

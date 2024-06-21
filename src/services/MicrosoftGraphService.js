@@ -13,7 +13,7 @@ class MicrosoftGraphService {
     this.refreshToken = refreshToken;
   }
 
-  async fetchEmails(skip = 0, top = 10) {
+  async fetchEmails(skip = 0, top = 10, retryAttempt = 0) {
     try {
       if (!this.accessToken) {
         throw new Error("Access token not provided or expired");
@@ -32,6 +32,14 @@ class MicrosoftGraphService {
       const response = await axios(options);
       return response.data.value;
     } catch (error) {
+      if (error.response && error.response.status === 429 && retryAttempt < 5) {
+        // Rate limit exceeded, retry with exponential backoff
+        const retryAfterSeconds = error.response.headers['retry-after'] || 1;
+        const delay = Math.pow(2, retryAttempt) * 1000;
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return this.fetchEmails(skip, top, retryAttempt + 1);
+      }
+
       console.error(
         "Error fetching emails:",
         error.response ? error.response.data : error.message
@@ -42,8 +50,7 @@ class MicrosoftGraphService {
 
   async refreshAccessToken() {
     try {
-      const tokenEndpoint =
-        "https://login.microsoftonline.com/common/oauth2/v2.0/token";
+      const tokenEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
       const response = await axios.post(tokenEndpoint, null, {
         params: {
           client_id: this.clientId,

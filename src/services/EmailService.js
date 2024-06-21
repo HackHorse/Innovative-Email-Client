@@ -1,5 +1,4 @@
 const elasticsearch = require("../utils/elasticsearch");
-const Email = require("../models/Email");
 
 class EmailService {
   static async syncEmails(user, emails) {
