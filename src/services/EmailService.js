@@ -22,7 +22,10 @@ class EmailService {
 
       // Fetch existing emails from Elasticsearch
       const existingEmailsResponse = await elasticsearch.search(indexName, {
-        match_all: {},
+        query: {
+          match_all: {}
+        },
+        _source: ["emailId"],
       });
       const existingEmailIds = existingEmailsResponse.hits.hits.map(
         (hit) => hit._source.emailId
@@ -60,7 +63,9 @@ class EmailService {
   static async getEmails(userId) {
     try {
       const result = await elasticsearch.search(`emails_${userId}`, {
-        match_all: {},
+        query: {
+          match_all: {}
+        }
       });
       return result.hits.hits.map((hit) => hit._source);
     } catch (error) {

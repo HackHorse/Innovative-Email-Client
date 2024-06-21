@@ -41,10 +41,17 @@ class ElasticsearchClient {
     }
   }
 
+  // async search(indexName, query) {
+  //   return this.client.search({
+  //     index: indexName,
+  //     query: query,
+  //   });
+  // }
+
   async search(indexName, query) {
     return this.client.search({
       index: indexName,
-      query: query,
+      body: query,
     });
   }
 

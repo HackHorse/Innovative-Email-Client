@@ -32,10 +32,7 @@ class EmailSyncService {
       });
 
       // Fetch last synced email ID from Elasticsearch
-      let lastSyncedEmailId = await elasticsearch.getLastSyncedEmailId(user.id);
-      if (!lastSyncedEmailId) {
-        lastSyncedEmailId = "";
-      }
+      const lastSyncedEmailId = await elasticsearch.getLastSyncedEmailId(user.id);
 
       // Fetch emails from Microsoft Graph API in batches
       let emails = [];
@@ -57,7 +54,8 @@ class EmailSyncService {
 
       // Update last synced email ID in Elasticsearch
       if (newEmails.length > 0) {
-        await elasticsearch.setLastSyncedEmailId(user.id, newEmails[0].id);
+        const lastEmail = newEmails[newEmails.length - 1];
+        await elasticsearch.setLastSyncedEmailId(user.id, lastEmail.id);
       }
 
       // Update mailbox details in Elasticsearch
