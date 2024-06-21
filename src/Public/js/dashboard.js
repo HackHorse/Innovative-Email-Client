@@ -102,10 +102,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       noEmailsMessage.classList.add("hidden");
       emails.forEach((email) => {
         const li = document.createElement("li");
-        li.className = "p-4 cursor-pointer hover:bg-gray-100";
+        li.className = `p-4 cursor-pointer hover:bg-gray-100 ${
+          email.isRead ? "bg-white" : "bg-yellow-100"
+        }`;
         li.innerHTML = `
-          <div class="font-bold">${email.subject}</div>
-          <div class="text-sm text-gray-600">${email.snippet ? email.snippet : (email.content ? email.content.substring(0, 100) + "..." : "")}</div>
+          <div class="font-bold">${email.subject || 'No Subject'}</div>
+          <div class="text-sm text-gray-600">${email.snippet || (email.content ? email.content.substring(0, 100) + "..." : "No content available")}</div>
         `;
         li.addEventListener("click", () => {
           displayEmailContent(email);

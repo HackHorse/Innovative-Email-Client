@@ -124,22 +124,30 @@ class ElasticsearchClient {
     }
   }
 
-// New method to get emails for a user with pagination
-async getEmailsForUser(userId, skip = 0, top = 10) {
-  const indexName = `emails_${userId}`;
-  const result = await this.client.search({
-    index: indexName,
-    body: {
-      from: skip,
-      size: top,
-      sort: [{ receivedDateTime: { order: "desc" } }],
-      _source: ["subject", "sender", "receivedDateTime", "content", "hasAttachments", "importance", "isRead"],
-    },
-  });
+  // New method to get emails for a user with pagination
+  async getEmailsForUser(userId, skip = 0, top = 10) {
+    const indexName = `emails_${userId}`;
+    const result = await this.client.search({
+      index: indexName,
+      body: {
+        from: skip,
+        size: top,
+        sort: [{ receivedDateTime: { order: "desc" } }],
+        _source: [
+          "subject",
+          "sender",
+          "receivedDateTime",
+          "content",
+          "hasAttachments",
+          "importance",
+          "isRead",
+        ],
+      },
+    });
 
-  const emails = result.hits.hits.map(hit => hit._source);
-  return emails;
-}
+    const emails = result.hits.hits.map((hit) => hit._source);
+    return emails;
+  }
 
   // New method to count the total number of emails for a user
   async countEmailsForUser(userId) {
