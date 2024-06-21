@@ -23,6 +23,13 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    /* Ensure consistent font sizes */
+    .email-content h3 {
+      font-size: 1.25rem; /* Ensure header size remains consistent */
+    }
+    .email-content p {
+      font-size: 1rem; /* Ensure paragraph size remains consistent */
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -52,7 +59,7 @@
     <!-- Email Content -->
     <div class="w-2/3 bg-white p-8 shadow-lg scrollable">
       <h2 class="text-2xl font-bold mb-4">Email Content</h2>
-      <div id="email-content" class="prose">
+      <div id="email-content" class="email-content prose">
         <!-- Email content will be displayed here -->
         <p>No Email Content Yet</p>
       </div>
