@@ -1,5 +1,5 @@
 const express = require('express');
-const passport = require('../config/passport'); // Adjust path as needed
+const passport = require('../config/passport');
 const AuthController = require('../controllers/AuthController');
 
 const router = express.Router();
@@ -21,8 +21,5 @@ router.get('/auth/microsoft/callback', passport.authenticate('microsoft', { fail
     </script>
   `);
 });
-
-// Optional: Get login URL
-router.get('/login', AuthController.getLoginURL);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const authenticate = (req, res, next) => {
-    console.log("Session:", req.session); // Log session details for debugging
-    console.log("User:", req.user); // Log user details for debugging
+    console.log("Session:", req.session); // Logging session during debugging
+    console.log("User:", req.user); // Logging user during debugging
   
     if (req.isAuthenticated()) {
       return next();

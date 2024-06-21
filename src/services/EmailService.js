@@ -22,11 +22,17 @@ class EmailService {
       });
 
       // Fetch existing emails from Elasticsearch
-      const existingEmailsResponse = await elasticsearch.search(indexName, { match_all: {} });
-      const existingEmailIds = existingEmailsResponse.hits.hits.map(hit => hit._source.emailId);
+      const existingEmailsResponse = await elasticsearch.search(indexName, {
+        match_all: {},
+      });
+      const existingEmailIds = existingEmailsResponse.hits.hits.map(
+        (hit) => hit._source.emailId
+      );
 
       // Filter out emails that are already indexed
-      const newEmails = emails.filter(email => !existingEmailIds.includes(email.id));
+      const newEmails = emails.filter(
+        (email) => !existingEmailIds.includes(email.id)
+      );
 
       for (const email of newEmails) {
         const emailData = {
@@ -60,36 +66,6 @@ class EmailService {
       return result.hits.hits.map((hit) => hit._source);
     } catch (error) {
       console.error("Error fetching emails:", error);
-      throw error;
-    }
-  }
-
-  static async updateEmail(user, email) {
-    try {
-      const emailData = new Email(
-        user.id,
-        email.id,
-        email.subject,
-        email.sender.emailAddress.address,
-        email.receivedDateTime,
-        email.body.content,
-        email.hasAttachments,
-        email.importance,
-        email.isRead
-      );
-
-      await elasticsearch.updateData(`emails_${user.id}`, email.id, emailData);
-    } catch (error) {
-      console.error("Error updating email:", error);
-      throw error;
-    }
-  }
-
-  static async deleteEmail(user, emailId) {
-    try {
-      await elasticsearch.deleteData(`emails_${user.id}`, emailId);
-    } catch (error) {
-      console.error("Error deleting email:", error);
       throw error;
     }
   }

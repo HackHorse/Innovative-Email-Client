@@ -9,7 +9,7 @@ class UserController {
 
     try {
       // Generate OAuth URL for Outlook login
-      const authUrl = '/api/auth/outlook'; // Replace with actual OAuth endpoint
+      const authUrl = '/api/auth/outlook';
 
       // Return the OAuth URL for the frontend to redirect
       res.status(200).json({ authUrl });
@@ -22,8 +22,7 @@ class UserController {
   static async handleOAuthCallback(req, res) {
     try {
       // Handle successful OAuth callback
-      const { id, email, accessToken, refreshToken } = req.user; // Assuming these are available from Passport
-
+      const { id, email, accessToken, refreshToken } = req.user;
       // Save user details and tokens securely
       const user = new User(id, email, accessToken, refreshToken);
       await user.save();

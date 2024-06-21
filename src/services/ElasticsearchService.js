@@ -7,11 +7,11 @@ class ElasticsearchService {
       console.log("Indexing user:", user);
       await elasticsearchClient.createIndex("users", {
         properties: {
-          id: { type: 'keyword' },
-          email: { type: 'keyword' },
-          accessToken: { type: 'text' },
-          refreshToken: { type: 'text' },
-        }
+          id: { type: "keyword" },
+          email: { type: "keyword" },
+          accessToken: { type: "text" },
+          refreshToken: { type: "text" },
+        },
       });
 
       const result = await elasticsearchClient.indexData("users", {
@@ -55,84 +55,6 @@ class ElasticsearchService {
         console.error("Error getting user by id:", error);
         throw error;
       }
-    }
-  }
-
-  static async indexEmail(userId, email) {
-    try {
-      await elasticsearchClient.createIndex(`emails_${userId}`, {
-        properties: {
-          userId: { type: 'keyword' },
-          emailId: { type: 'keyword' },
-          subject: { type: 'text' },
-          sender: { type: 'keyword' },
-          receivedDateTime: { type: 'date' },
-          content: { type: 'text' },
-          hasAttachments: { type: 'boolean' },
-          importance: { type: 'keyword' },
-          isRead: { type: 'boolean' },
-        }
-      });
-
-      const emailData = new Email(
-        userId,
-        email.id,
-        email.subject,
-        email.sender.emailAddress.address,
-        email.receivedDateTime,
-        email.body.content,
-        email.hasAttachments,
-        email.importance,
-        email.isRead,
-      );
-
-      await elasticsearchClient.indexData(`emails_${userId}`, emailData);
-      console.log("Email indexed:", emailData);
-    } catch (error) {
-      console.error("Error indexing email:", error);
-      throw error;
-    }
-  }
-
-
-  static async updateEmail(userId, email) {
-    try {
-      const emailData = new Email(
-        user.id,
-        email.id,
-        email.subject,
-        email.sender.emailAddress.address,
-        email.toRecipients
-          .map((recipient) => recipient.emailAddress.address)
-          .join(", "),
-        email.receivedDateTime,
-        email.body.content,
-        email.hasAttachments,
-        email.importance,
-        email.isRead,
-        email.internetMessageId,
-        email.webLink
-      );
-
-      await elasticsearchClient.updateData(
-        `emails_${userId}`,
-        email.id,
-        emailData
-      );
-      console.log("Email updated:", emailData);
-    } catch (error) {
-      console.error("Error updating email:", error);
-      throw error;
-    }
-  }
-
-  static async deleteEmail(userId, emailId) {
-    try {
-      await elasticsearchClient.deleteData(`emails_${userId}`, emailId);
-      console.log("Email deleted:", emailId);
-    } catch (error) {
-      console.error("Error deleting email:", error);
-      throw error;
     }
   }
 

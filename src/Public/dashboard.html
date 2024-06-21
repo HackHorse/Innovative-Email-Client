@@ -10,13 +10,27 @@
       overflow-y: auto;
       height: calc(100vh - 4rem); /* Adjusting height to fit within viewport minus header height */
     }
+    .spinner {
+      display: none;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid white;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
   <header class="bg-blue-600 text-white py-4 px-8">
     <div class="container mx-auto flex justify-between items-center">
       <h1 class="text-3xl font-bold" id="user-email-value"></h1>
-      <div>
+      <div class="flex items-center">
+        <div id="sync-spinner" class="spinner mr-4"></div>
         <button id="sync-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-lg mr-4">Sync</button>
         <button id="logout-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow-lg">Logout</button>
       </div>
@@ -30,6 +44,9 @@
       <ul id="email-list" class="divide-y divide-gray-200">
         <!-- Emails will be dynamically added here -->
       </ul>
+      <div id="no-emails-message" class="text-center text-gray-500 p-4 hidden">
+        No Emails Available
+      </div>
     </div>
 
     <!-- Email Content -->
@@ -37,7 +54,7 @@
       <h2 class="text-2xl font-bold mb-4">Email Content</h2>
       <div id="email-content" class="prose">
         <!-- Email content will be displayed here -->
-        <p>Select an email to view its content.</p>
+        <p>No Email Content Yet</p>
       </div>
     </div>
   </main>
@@ -50,7 +67,7 @@
       try {
         const response = await fetch('/logout', {
           method: 'POST',
-          credentials: 'same-origin', // Include cookies in the request
+          credentials: 'same-origin',
           headers: {
             'Content-Type': 'application/json'
           }

@@ -24,17 +24,19 @@ class EmailSyncService {
       }
 
       // Fetch emails from Microsoft Graph API
-      const emails = await msGraphService.fetchEmails(0, 50); // Fetch 50 emails initially
+      // Fetch 50 emails initially
+      const emails = await msGraphService.fetchEmails(0, 50);
 
       // Filter out emails that have already been indexed
-      const newEmails = emails.filter(email => email.id > lastSyncedEmailId);
+      const newEmails = emails.filter((email) => email.id > lastSyncedEmailId);
 
       // Sync new emails into Elasticsearch
       await EmailService.syncEmails(user, newEmails);
 
       // Update last synced email ID in Elasticsearch
+      // Update lastSyncedEmailId
       if (newEmails.length > 0) {
-        await elasticsearch.setLastSyncedEmailId(user.id, newEmails[0].id); // Update lastSyncedEmailId
+        await elasticsearch.setLastSyncedEmailId(user.id, newEmails[0].id);
       }
 
       // Update mailbox details in Elasticsearch

@@ -55,52 +55,52 @@ class ElasticsearchClient {
         id,
         body: { doc: data },
       });
-      console.log('Updated data:', response);
+      console.log("Updated data:", response);
       return response;
     } catch (error) {
-      console.error('Error updating data:', error);
+      console.error("Error updating data:", error);
       throw error;
     }
   }
 
   // Add these methods to ElasticsearchClient class
 
-async getLastSyncedEmailId(userId) {
-  try {
-    const result = await this.client.get({
-      index: 'users', // Index where user details are stored
-      id: userId,
-    });
+  async getLastSyncedEmailId(userId) {
+    try {
+      const result = await this.client.get({
+        index: "users", // Index where user details are stored
+        id: userId,
+      });
 
-    return result._source.lastSyncedEmailId;
-  } catch (error) {
-    if (error.statusCode === 404) {
-      console.log(`No last synced email ID found for user ${userId}`);
-      return null;
-    }
-    console.error('Error getting last synced email ID:', error);
-    throw error;
-  }
-}
-
-async setLastSyncedEmailId(userId, lastSyncedEmailId) {
-  try {
-    const response = await this.client.update({
-      index: 'users', // Index where user details are stored
-      id: userId,
-      body: {
-        doc: {
-          lastSyncedEmailId: lastSyncedEmailId,
-        }
+      return result._source.lastSyncedEmailId;
+    } catch (error) {
+      if (error.statusCode === 404) {
+        console.log(`No last synced email ID found for user ${userId}`);
+        return null;
       }
-    });
-    console.log(`Updated last synced email ID for user ${userId}`);
-    return response;
-  } catch (error) {
-    console.error('Error setting last synced email ID:', error);
-    throw error;
+      console.error("Error getting last synced email ID:", error);
+      throw error;
+    }
   }
-}
+
+  async setLastSyncedEmailId(userId, lastSyncedEmailId) {
+    try {
+      const response = await this.client.update({
+        index: "users", // Index where user details are stored
+        id: userId,
+        body: {
+          doc: {
+            lastSyncedEmailId: lastSyncedEmailId,
+          },
+        },
+      });
+      console.log(`Updated last synced email ID for user ${userId}`);
+      return response;
+    } catch (error) {
+      console.error("Error setting last synced email ID:", error);
+      throw error;
+    }
+  }
 
   async checkConnection() {
     try {
@@ -119,23 +119,22 @@ async setLastSyncedEmailId(userId, lastSyncedEmailId) {
         index: indexName,
         id: id,
       });
-  
+
       if (!result) {
         console.log(`Document not found for id: ${id}`);
         return null;
       }
-  
+
       const { _index, _id, _source } = result;
       console.log(`Retrieved document: ${_index}/${_id}`, _source);
-  
+
       return _source; // Return the _source of the document
-  
     } catch (error) {
       if (error.meta && error.meta.statusCode === 404) {
         console.log(`Document not found for id: ${id}`);
         return null;
       }
-      console.error('Error getting data from Elasticsearch:', error);
+      console.error("Error getting data from Elasticsearch:", error);
       throw error;
     }
   }

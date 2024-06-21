@@ -1,4 +1,4 @@
-// src/models/Email.js
+// src/models/Email.js // Email class for Emails functions
 class Email {
   constructor(userId, emailId, subject, sender, receivedDateTime, content, hasAttachments, importance, isRead) {
     this.userId = userId;
