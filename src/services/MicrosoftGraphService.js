@@ -19,7 +19,9 @@ class MicrosoftGraphService {
         throw new Error("Access token not provided or expired");
       }
 
-      const url = nextLink || `https://graph.microsoft.com/v1.0/me/messages?$orderby=receivedDateTime desc`;
+      const url =
+        nextLink ||
+        `https://graph.microsoft.com/v1.0/me/messages?$orderby=receivedDateTime desc`;
       const options = {
         method: "GET",
         url: url,
@@ -33,20 +35,24 @@ class MicrosoftGraphService {
       return response.data;
     } catch (error) {
       if (error.response && error.response.status === 429 && retryAttempt < 5) {
-        const retryAfterSeconds = error.response.headers['retry-after'] || 1;
+        const retryAfterSeconds = error.response.headers["retry-after"] || 1;
         const delay = Math.pow(2, retryAttempt) * 1000;
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         return this.fetchEmails(nextLink, retryAttempt + 1);
       }
 
-      console.error("Error fetching emails:", error.response ? error.response.data : error.message);
+      console.error(
+        "Error fetching emails:",
+        error.response ? error.response.data : error.message
+      );
       throw error;
     }
   }
 
   async refreshAccessToken() {
     try {
-      const tokenEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
+      const tokenEndpoint =
+        "https://login.microsoftonline.com/common/oauth2/v2.0/token";
       const response = await axios.post(tokenEndpoint, null, {
         params: {
           client_id: this.clientId,
@@ -59,7 +65,10 @@ class MicrosoftGraphService {
       this.accessToken = response.data.access_token;
       console.log("Refreshed access token:", this.accessToken);
     } catch (error) {
-      console.error("Error refreshing access token:", error.response ? error.response.data : error.message);
+      console.error(
+        "Error refreshing access token:",
+        error.response ? error.response.data : error.message
+      );
       throw error;
     }
   }

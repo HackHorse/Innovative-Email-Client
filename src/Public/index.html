@@ -1,27 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Innovative Email Client</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Innovative Email Client</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
+  <body
+    class="bg-gray-100 min-h-screen flex flex-col justify-center items-center"
+  >
+    <div class="text-center">
+      <img src="img/inno.png" alt="Logo" class="w-auto h-28 mx-auto mb-8" />
+      <a
+        href="/api/auth/microsoft"
+        class="bg-white hover:bg-blue-200 text-black font-bold py-2 px-4 rounded shadow-lg mb-4 inline-block"
+        >Login with Outlook</a
+      >
+    </div>
 
-<body class="bg-gray-100 min-h-screen flex flex-col justify-center items-center">
-  <div class="text-center">
-    <img src="img/inno.png" alt="Logo" class="w-auto h-28 mx-auto mb-8">
-    <a href="/api/auth/microsoft"
-      class="bg-white hover:bg-blue-200 text-black font-bold py-2 px-4 rounded shadow-lg mb-4 inline-block">Login
-      with Outlook</a>
-  </div>
-
-  <script>
-    // Optional: Add event listener to log click event
-    document.querySelector('a[href="/api/auth/microsoft"]').addEventListener('click', (event) => {
-      console.log('Clicked on Login with Outlook');
-    });
-  </script>
-</body>
-
+    <script>
+      // Optional: Add event listener to log click event
+      document
+        .querySelector('a[href="/api/auth/microsoft"]')
+        .addEventListener("click", (event) => {
+          console.log("Clicked on Login with Outlook");
+        });
+    </script>
+  </body>
 </html>

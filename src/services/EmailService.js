@@ -23,7 +23,7 @@ class EmailService {
       // Fetch existing emails from Elasticsearch
       const existingEmailsResponse = await elasticsearch.search(indexName, {
         query: {
-          match_all: {}
+          match_all: {},
         },
         _source: ["emailId"],
       });

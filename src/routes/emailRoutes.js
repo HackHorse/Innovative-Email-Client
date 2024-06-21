@@ -6,8 +6,6 @@ const EmailSyncService = require("../services/EmailSyncService");
 const ElasticsearchService = require("../services/ElasticsearchService");
 const elasticsearch = require("../utils/elasticsearch");
 
-
-
 // POST /api/emails/sync - Sync emails for the authenticated user
 router.post("/emails/sync", authenticate, async (req, res) => {
   try {
@@ -27,10 +25,16 @@ router.post("/emails/sync", authenticate, async (req, res) => {
     top = top || 10;
 
     // Log user ID and pagination parameters
-    console.log(`Syncing emails for user ID: ${userId}, skip: ${skip}, top: ${top}`);
+    console.log(
+      `Syncing emails for user ID: ${userId}, skip: ${skip}, top: ${top}`
+    );
 
     // Sync user emails with pagination using EmailSyncService
-    const syncedEmailCount = await EmailSyncService.syncUserEmails(user, skip, top);
+    const syncedEmailCount = await EmailSyncService.syncUserEmails(
+      user,
+      skip,
+      top
+    );
 
     res.status(200).json({ message: `Synced ${syncedEmailCount} emails` });
   } catch (error) {
@@ -50,13 +54,21 @@ router.get("/emails", authenticate, async (req, res) => {
     const top = parseInt(limit);
 
     // Log user ID and pagination parameters
-    console.log(`Fetching emails for user ID: ${userId}, skip: ${skip}, top: ${top}`);
+    console.log(
+      `Fetching emails for user ID: ${userId}, skip: ${skip}, top: ${top}`
+    );
 
     // Fetch emails with pagination using EmailService
-    const { emails, hasNextPage } = await EmailService.getEmails(userId, skip, top);
+    const { emails, hasNextPage } = await EmailService.getEmails(
+      userId,
+      skip,
+      top
+    );
 
     // Construct next page link if there are more emails
-    const nextLink = hasNextPage ? `/api/emails?page=${parseInt(page) + 1}&limit=${limit}` : null;
+    const nextLink = hasNextPage
+      ? `/api/emails?page=${parseInt(page) + 1}&limit=${limit}`
+      : null;
 
     res.json({ emails, nextLink });
   } catch (error) {
@@ -64,6 +76,5 @@ router.get("/emails", authenticate, async (req, res) => {
     res.status(500).json({ error: "Failed to fetch emails" });
   }
 });
-
 
 module.exports = router;

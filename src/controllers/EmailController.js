@@ -1,16 +1,18 @@
-const EmailSyncService = require('../services/EmailSyncService');
-const EmailService = require('../services/EmailService');
-const ElasticsearchService = require('../services/ElasticsearchService');
+const EmailSyncService = require("../services/EmailSyncService");
+const EmailService = require("../services/EmailService");
+const ElasticsearchService = require("../services/ElasticsearchService");
 
 class EmailController {
   static async syncEmails(req, res) {
     try {
       const user = req.user; // Assuming user object is available after OAuth authentication
       const emailsSynced = await EmailSyncService.syncUserEmails(user);
-      res.status(200).json({ message: `Synced ${emailsSynced} emails successfully` });
+      res
+        .status(200)
+        .json({ message: `Synced ${emailsSynced} emails successfully` });
     } catch (error) {
-      console.error('Error syncing emails:', error);
-      res.status(500).json({ error: 'Failed to sync emails' });
+      console.error("Error syncing emails:", error);
+      res.status(500).json({ error: "Failed to sync emails" });
     }
   }
 
@@ -20,8 +22,8 @@ class EmailController {
       const emails = await EmailService.getEmails(userId);
       res.json(emails);
     } catch (error) {
-      console.error('Error fetching emails:', error);
-      res.status(500).json({ error: 'Failed to fetch emails' });
+      console.error("Error fetching emails:", error);
+      res.status(500).json({ error: "Failed to fetch emails" });
     }
   }
 
@@ -29,10 +31,10 @@ class EmailController {
     try {
       const { userId, email } = req.body;
       await ElasticsearchService.updateEmail(userId, email);
-      res.status(200).json({ message: 'Email updated successfully' });
+      res.status(200).json({ message: "Email updated successfully" });
     } catch (error) {
-      console.error('Error updating email:', error);
-      res.status(500).json({ error: 'Failed to update email' });
+      console.error("Error updating email:", error);
+      res.status(500).json({ error: "Failed to update email" });
     }
   }
 
@@ -40,10 +42,10 @@ class EmailController {
     try {
       const { userId, emailId } = req.params;
       await ElasticsearchService.deleteEmail(userId, emailId);
-      res.status(200).json({ message: 'Email deleted successfully' });
+      res.status(200).json({ message: "Email deleted successfully" });
     } catch (error) {
-      console.error('Error deleting email:', error);
-      res.status(500).json({ error: 'Failed to delete email' });
+      console.error("Error deleting email:", error);
+      res.status(500).json({ error: "Failed to delete email" });
     }
   }
 }

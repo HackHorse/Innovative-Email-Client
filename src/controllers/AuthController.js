@@ -1,9 +1,9 @@
-const passport = require('../config/passport');
+const passport = require("../config/passport");
 
 class AuthController {
   static callback(req, res) {
     // Successful authentication, redirect to frontend or dashboard
-    res.redirect('/dashboard');
+    res.redirect("/dashboard");
   }
 
   static getLoginURL(req, res) {

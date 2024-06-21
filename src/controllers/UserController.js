@@ -1,7 +1,7 @@
 // src/controllers/UserController.js
-const User = require('../models/User');
-const ElasticsearchService = require('../services/ElasticsearchService');
-const passport = require('../config/passport');
+const User = require("../models/User");
+const ElasticsearchService = require("../services/ElasticsearchService");
+const passport = require("../config/passport");
 
 class UserController {
   static async createUser(req, res) {
@@ -9,13 +9,13 @@ class UserController {
 
     try {
       // Generate OAuth URL for Outlook login
-      const authUrl = '/api/auth/outlook';
+      const authUrl = "/api/auth/outlook";
 
       // Return the OAuth URL for the frontend to redirect
       res.status(200).json({ authUrl });
     } catch (error) {
-      console.error('Error creating user:', error);
-      res.status(500).json({ error: 'Failed to create user' });
+      console.error("Error creating user:", error);
+      res.status(500).json({ error: "Failed to create user" });
     }
   }
 
@@ -28,10 +28,10 @@ class UserController {
       await user.save();
 
       // Redirect to frontend or callback URL
-      res.redirect('/'); // Redirect to home or callback URL
+      res.redirect("/"); // Redirect to home or callback URL
     } catch (error) {
-      console.error('Error handling OAuth callback:', error);
-      res.status(500).json({ error: 'Failed to handle OAuth callback' });
+      console.error("Error handling OAuth callback:", error);
+      res.status(500).json({ error: "Failed to handle OAuth callback" });
     }
   }
 }

@@ -1,92 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    .scrollable {
-      overflow-y: auto;
-      height: calc(100vh - 4rem); /* Adjusting height to fit within viewport minus header height */
-    }
-    .spinner {
-      display: none;
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top: 4px solid white;
-      width: 24px;
-      height: 24px;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
-</head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
-  <header class="bg-blue-600 text-white py-4 px-8">
-    <div class="container mx-auto flex justify-between items-center">
-      <h1 class="text-3xl font-bold" id="user-email-value"></h1>
-      <div class="flex items-center">
-        <div id="sync-spinner" class="spinner mr-4"></div>
-        <button id="sync-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-lg mr-4">Sync</button>
-        <button id="logout-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow-lg">Logout</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .scrollable {
+        overflow-y: auto;
+        height: calc(
+          100vh - 4rem
+        ); /* Adjusting height to fit within viewport minus header height */
+      }
+      .spinner {
+        display: none;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid white;
+        width: 24px;
+        height: 24px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-blue-600 text-white py-4 px-8">
+      <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-3xl font-bold" id="user-email-value"></h1>
+        <div class="flex items-center">
+          <div id="sync-spinner" class="spinner mr-4"></div>
+          <button
+            id="sync-btn"
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-lg mr-4"
+          >
+            Sync
+          </button>
+          <button
+            id="logout-btn"
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow-lg"
+          >
+            Logout
+          </button>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main class="flex flex-1 overflow-hidden">
-    <!-- Email List -->
-    <div class="w-1/3 bg-white shadow-lg scrollable">
-      <h2 class="text-xl font-bold p-4">Your Emails</h2>
-      <ul id="email-list" class="divide-y divide-gray-200">
-        <!-- Emails will be dynamically added here -->
-      </ul>
-      <div id="no-emails-message" class="text-center text-gray-500 p-4 hidden">
-        No Emails Available
+    <main class="flex flex-1 overflow-hidden">
+      <!-- Email List -->
+      <div class="w-1/3 bg-white shadow-lg scrollable">
+        <h2 class="text-xl font-bold p-4">Your Emails</h2>
+        <ul id="email-list" class="divide-y divide-gray-200">
+          <!-- Emails will be dynamically added here -->
+        </ul>
+        <div
+          id="no-emails-message"
+          class="text-center text-gray-500 p-4 hidden"
+        >
+          No Emails Available
+        </div>
+        <button
+          id="load-more-btn"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg m-4 hidden"
+        >
+          Load More
+        </button>
       </div>
-      <button id="load-more-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg m-4 hidden">Load More</button>
-    </div>
 
-    <!-- Email Content -->
-    <div class="w-2/3 bg-white p-8 shadow-lg scrollable">
-      <h2 class="text-2xl font-bold mb-4">Email Content</h2>
-      <div id="email-content" class="email-content prose">
-        <!-- Email content will be displayed here -->
-        <p>No Email Content Yet</p>
+      <!-- Email Content -->
+      <div class="w-2/3 bg-white p-8 shadow-lg scrollable">
+        <h2 class="text-2xl font-bold mb-4">Email Content</h2>
+        <div id="email-content" class="email-content prose">
+          <!-- Email content will be displayed here -->
+          <p>No Email Content Yet</p>
+        </div>
       </div>
-    </div>
-  </main>
+    </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="js/dashboard.js"></script>
-  <script>
-    // Logout button click handler
-    document.getElementById('logout-btn').addEventListener('click', async () => {
-      try {
-        const response = await fetch('/logout', {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: {
-            'Content-Type': 'application/json'
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+      // Logout button click handler
+      document
+        .getElementById("logout-btn")
+        .addEventListener("click", async () => {
+          try {
+            const response = await fetch("/logout", {
+              method: "POST",
+              credentials: "same-origin",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (response.ok) {
+              localStorage.removeItem("userEmail");
+              localStorage.removeItem("userAccessToken");
+              window.location.href = "/login";
+            } else {
+              console.error("Logout failed:", response.statusText);
+              alert("Logout failed");
+            }
+          } catch (error) {
+            console.error("Error during logout:", error);
+            alert("Error during logout");
           }
         });
-
-        if (response.ok) {
-          localStorage.removeItem('userEmail');
-          localStorage.removeItem('userAccessToken');
-          window.location.href = '/login';
-        } else {
-          console.error('Logout failed:', response.statusText);
-          alert('Logout failed');
-        }
-      } catch (error) {
-        console.error('Error during logout:', error);
-        alert('Error during logout');
-      }
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>

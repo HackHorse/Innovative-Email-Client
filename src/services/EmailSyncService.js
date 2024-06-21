@@ -32,7 +32,9 @@ class EmailSyncService {
       });
 
       // Fetch last synced email ID from Elasticsearch
-      const lastSyncedEmailId = await elasticsearch.getLastSyncedEmailId(user.id);
+      const lastSyncedEmailId = await elasticsearch.getLastSyncedEmailId(
+        user.id
+      );
 
       // Fetch emails from Microsoft Graph API with pagination
       let emails = [];
@@ -45,13 +47,16 @@ class EmailSyncService {
 
         // Filter out emails that have already been indexed
         const newEmails = lastSyncedEmailId
-          ? fetchedEmails.filter((email) => new Date(email.receivedDateTime) > new Date(lastSyncedEmailId))
+          ? fetchedEmails.filter(
+              (email) =>
+                new Date(email.receivedDateTime) > new Date(lastSyncedEmailId)
+            )
           : fetchedEmails;
 
         emails.push(...newEmails);
 
         // Check for pagination link
-        nextLink = response['@odata.nextLink'];
+        nextLink = response["@odata.nextLink"];
         hasMoreEmails = nextLink != null;
       }
 
@@ -61,7 +66,10 @@ class EmailSyncService {
       // Update last synced email ID in Elasticsearch
       if (emails.length > 0) {
         const lastEmail = emails[emails.length - 1];
-        await elasticsearch.setLastSyncedEmailId(user.id, lastEmail.receivedDateTime);
+        await elasticsearch.setLastSyncedEmailId(
+          user.id,
+          lastEmail.receivedDateTime
+        );
       }
 
       // Update mailbox details in Elasticsearch
