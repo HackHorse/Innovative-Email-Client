@@ -4,11 +4,11 @@
   "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/server.js",
-    "build:css": "tailwindcss build ./src/styles.css -o ./src/public/styles.css"
+    "start": "NODE_OPTIONS=--max-old-space-size=4096 nodemon src/server.js",
+    "build:css": "tailwindcss build ./src/public/styles.css -o ./src/public/styles.css"
   },
   "keywords": [],
-  "author": "",
+  "author": "singh",
   "license": "ISC",
   "description": "",
   "proxy": "http://localhost:3000",

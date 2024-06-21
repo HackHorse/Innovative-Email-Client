@@ -6,7 +6,7 @@ class EmailService {
     try {
       const indexName = `emails_${user.id}`;
 
-      // Ensure index exists
+      // Ensure index exists or create it
       await elasticsearch.createIndex(indexName, {
         properties: {
           userId: { type: "keyword" },
