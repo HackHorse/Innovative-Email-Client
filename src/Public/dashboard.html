@@ -23,13 +23,6 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    /* Ensure consistent font sizes */
-    .email-content h3 {
-      font-size: 1.25rem; /* Ensure header size remains consistent */
-    }
-    .email-content p {
-      font-size: 1rem; /* Ensure paragraph size remains consistent */
-    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -54,6 +47,7 @@
       <div id="no-emails-message" class="text-center text-gray-500 p-4 hidden">
         No Emails Available
       </div>
+      <button id="load-more-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg m-4 hidden">Load More</button>
     </div>
 
     <!-- Email Content -->

@@ -5,7 +5,7 @@ const elasticsearch = require("../utils/elasticsearch");
 const ElasticsearchService = require("../services/ElasticsearchService");
 
 class EmailSyncService {
-  static async syncUserEmails(user, skip = 0, top = 10) {
+  static async syncUserEmails(user) {
     try {
       const msGraphService = new MicrosoftGraphService(
         process.env.OUTLOOK_CLIENT_ID,
@@ -34,28 +34,34 @@ class EmailSyncService {
       // Fetch last synced email ID from Elasticsearch
       const lastSyncedEmailId = await elasticsearch.getLastSyncedEmailId(user.id);
 
-      // Fetch emails from Microsoft Graph API in batches
+      // Fetch emails from Microsoft Graph API with pagination
       let emails = [];
-      let page = 0;
-      const batchSize = 50;
-      let fetchedEmails;
+      let nextLink = null;
+      let hasMoreEmails = true;
 
-      do {
-        fetchedEmails = await msGraphService.fetchEmails(page * batchSize, batchSize);
-        emails.push(...fetchedEmails);
-        page++;
-      } while (fetchedEmails.length === batchSize);
+      while (hasMoreEmails) {
+        const response = await msGraphService.fetchEmails(nextLink);
+        const fetchedEmails = response.value;
 
-      // Filter out emails that have already been indexed
-      const newEmails = emails.filter((email) => email.id > lastSyncedEmailId);
+        // Filter out emails that have already been indexed
+        const newEmails = lastSyncedEmailId
+          ? fetchedEmails.filter((email) => new Date(email.receivedDateTime) > new Date(lastSyncedEmailId))
+          : fetchedEmails;
+
+        emails.push(...newEmails);
+
+        // Check for pagination link
+        nextLink = response['@odata.nextLink'];
+        hasMoreEmails = nextLink != null;
+      }
 
       // Sync new emails into Elasticsearch
-      await EmailService.syncEmails(user, newEmails);
+      await EmailService.syncEmails(user, emails);
 
       // Update last synced email ID in Elasticsearch
-      if (newEmails.length > 0) {
-        const lastEmail = newEmails[newEmails.length - 1];
-        await elasticsearch.setLastSyncedEmailId(user.id, lastEmail.id);
+      if (emails.length > 0) {
+        const lastEmail = emails[emails.length - 1];
+        await elasticsearch.setLastSyncedEmailId(user.id, lastEmail.receivedDateTime);
       }
 
       // Update mailbox details in Elasticsearch
@@ -65,7 +71,7 @@ class EmailSyncService {
       };
       await ElasticsearchService.indexMailboxDetails(user.id, mailboxDetails);
 
-      return newEmails.length;
+      return emails.length;
     } catch (error) {
       console.error("Error syncing emails:", error);
       throw error;
@@ -94,8 +100,6 @@ class EmailSyncService {
   }
 
   static async processChanges(user, changes) {
-    // Implement logic to update local data based on changes received
-    // Example: Update read/unread status, delete emails, update flags, etc.
     for (const change of changes) {
       if (change.operation === "deleted") {
         await EmailService.deleteEmail(user, change.emailId);

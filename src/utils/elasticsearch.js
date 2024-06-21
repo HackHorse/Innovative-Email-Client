@@ -41,13 +41,6 @@ class ElasticsearchClient {
     }
   }
 
-  // async search(indexName, query) {
-  //   return this.client.search({
-  //     index: indexName,
-  //     query: query,
-  //   });
-  // }
-
   async search(indexName, query) {
     return this.client.search({
       index: indexName,
@@ -129,6 +122,33 @@ class ElasticsearchClient {
       console.error("Error getting data from Elasticsearch:", error);
       throw error;
     }
+  }
+
+// New method to get emails for a user with pagination
+async getEmailsForUser(userId, skip = 0, top = 10) {
+  const indexName = `emails_${userId}`;
+  const result = await this.client.search({
+    index: indexName,
+    body: {
+      from: skip,
+      size: top,
+      sort: [{ receivedDateTime: { order: "desc" } }],
+      _source: ["subject", "sender", "receivedDateTime", "content", "hasAttachments", "importance", "isRead"],
+    },
+  });
+
+  const emails = result.hits.hits.map(hit => hit._source);
+  return emails;
+}
+
+  // New method to count the total number of emails for a user
+  async countEmailsForUser(userId) {
+    const indexName = `emails_${userId}`;
+    const result = await this.client.count({
+      index: indexName,
+    });
+
+    return result.count;
   }
 }
 

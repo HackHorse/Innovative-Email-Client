@@ -60,17 +60,16 @@ class EmailService {
     }
   }
 
-  static async getEmails(userId) {
+  static async getEmails(userId, skip, top) {
     try {
-      const result = await elasticsearch.search(`emails_${userId}`, {
-        query: {
-          match_all: {}
-        }
-      });
-      return result.hits.hits.map((hit) => hit._source);
+      const emails = await elasticsearch.getEmailsForUser(userId, skip, top);
+      const totalEmails = await elasticsearch.countEmailsForUser(userId);
+      const hasNextPage = skip + top < totalEmails;
+
+      return { emails, hasNextPage };
     } catch (error) {
       console.error("Error fetching emails:", error);
-      throw error;
+      throw new Error("Failed to fetch emails");
     }
   }
 }

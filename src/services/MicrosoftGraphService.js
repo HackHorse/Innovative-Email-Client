@@ -13,13 +13,13 @@ class MicrosoftGraphService {
     this.refreshToken = refreshToken;
   }
 
-  async fetchEmails(skip = 0, top = 10, retryAttempt = 0) {
+  async fetchEmails(nextLink = null, retryAttempt = 0) {
     try {
       if (!this.accessToken) {
         throw new Error("Access token not provided or expired");
       }
 
-      const url = `https://graph.microsoft.com/v1.0/me/messages?$skip=${skip}&$top=${top}&$orderby=receivedDateTime desc`;
+      const url = nextLink || `https://graph.microsoft.com/v1.0/me/messages?$orderby=receivedDateTime desc`;
       const options = {
         method: "GET",
         url: url,
@@ -30,20 +30,16 @@ class MicrosoftGraphService {
       };
 
       const response = await axios(options);
-      return response.data.value;
+      return response.data;
     } catch (error) {
       if (error.response && error.response.status === 429 && retryAttempt < 5) {
-        // Rate limit exceeded, retry with exponential backoff
         const retryAfterSeconds = error.response.headers['retry-after'] || 1;
         const delay = Math.pow(2, retryAttempt) * 1000;
         await new Promise(resolve => setTimeout(resolve, delay));
-        return this.fetchEmails(skip, top, retryAttempt + 1);
+        return this.fetchEmails(nextLink, retryAttempt + 1);
       }
 
-      console.error(
-        "Error fetching emails:",
-        error.response ? error.response.data : error.message
-      );
+      console.error("Error fetching emails:", error.response ? error.response.data : error.message);
       throw error;
     }
   }
@@ -63,10 +59,7 @@ class MicrosoftGraphService {
       this.accessToken = response.data.access_token;
       console.log("Refreshed access token:", this.accessToken);
     } catch (error) {
-      console.error(
-        "Error refreshing access token:",
-        error.response ? error.response.data : error.message
-      );
+      console.error("Error refreshing access token:", error.response ? error.response.data : error.message);
       throw error;
     }
   }
